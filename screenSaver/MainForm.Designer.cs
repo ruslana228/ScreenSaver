@@ -1,4 +1,5 @@
-﻿namespace screenSaver
+﻿
+namespace screenSaver
 {
     partial class MainForm
     {
@@ -34,10 +35,21 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
+            AutoValidate = AutoValidate.EnablePreventFocusChange;
+            BackgroundImage = Properties.Resources.village;
+            BackgroundImageLayout = ImageLayout.Stretch;
             ClientSize = new Size(800, 450);
+            DoubleBuffered = true;
+            FormBorderStyle = FormBorderStyle.None;
             Name = "MainForm";
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "MainForm";
-            Load += Form1_Load;
+            TopMost = true;
+            WindowState = FormWindowState.Maximized;
+            ResizeEnd += MainForm_ResizeEnd;
+            Paint += MainForm_Paint;
+            KeyDown += MainForm_KeyDown;
+            MouseClick += MainForm_MouseClick;
             ResumeLayout(false);
         }
 
