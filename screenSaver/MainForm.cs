@@ -5,25 +5,26 @@ namespace screenSaver
         private System.Windows.Forms.Timer timer;
         private Image snowflake;
         private Image scene;
-        private Snowflake snowflakes;
+        private List<Snowflake> snowflakes;
         private Random random;
+        private const int SNOWFLAKE_COUNT = 150; // Количество снежинок
 
         public MainForm()
         {
             InitializeComponent();
 
             random = new Random();
-
+            snowflakes = new List<Snowflake>();
             scene = Properties.Resources.village;
             snowflake = Properties.Resources.snowflake;
 
             // Инициализируем снежинки
             InitializeSnowflakes();
 
-            // Настраиваем таймер
+            // Настройка таймера
             timer = new System.Windows.Forms.Timer();
             timer.Tick += Timer_Tick;
-            timer.Interval = 10;
+            timer.Interval = 8;
             timer.Start();
         }
 
@@ -32,7 +33,12 @@ namespace screenSaver
         /// </summary>
         private void InitializeSnowflakes()
         {
-            snowflakes = CreateSnowflake();
+            snowflakes.Clear();
+
+            for (int i = 0; i < SNOWFLAKE_COUNT; i++)
+            {
+                snowflakes.Add(CreateSnowflake());
+            }
         }
 
         /// <summary>
@@ -46,7 +52,21 @@ namespace screenSaver
             int height = this.ClientSize.Height;
 
             int size = random.Next(30, 80); // Размер снежинки
-            int speed = random.Next(6, 9); // Скорость падения снежинки
+            int speed; // Скорость падения снежинок
+
+            // Настраиваем скорость в зависимости от размера
+            if (size < 40) // Мелкие снежинки
+            {
+                speed = random.Next(3, 6);
+            }
+            else if (size > 60) // Крупные снежинки
+            {
+                speed = random.Next(7, 10);
+            }
+            else // Средние снежинки
+            {
+                speed = random.Next(5, 8);
+            }
 
             int x = random.Next(0, width);
             int y = random.Next(-height * 2, -height / 2); // Появляется выше экрана
@@ -72,13 +92,20 @@ namespace screenSaver
             int width = this.ClientSize.Width;
             int height = this.ClientSize.Height;
 
-            // Двигаем снежинку вниз на велечину ее скорости
-            snowflakes.Y += snowflakes.Speed;
-
-            // Если снежинка упала за нижнюю границу, то создаем новую
-            if (snowflakes.Y > height)
+            // Двигаем снежинки вниз на велечину их скорости
+            for (int i = 0; i < snowflakes.Count; i++)
             {
-                snowflakes = CreateSnowflake();
+                var sf = snowflakes[i];
+
+                // Двигаем снежинку вниз
+                sf.Y += sf.Speed;
+
+                // Если снежинка упала за нижнюю границу
+                if (sf.Y > height)
+                {
+                    snowflakes[i] = CreateSnowflake();
+                    snowflakes[i].Y = -snowflakes[i].Size; // Чтобы снежинка появилась выше экрана
+                }
             }
 
             this.Invalidate(); // Перерисовка формы
@@ -96,8 +123,11 @@ namespace screenSaver
             // Отрисовка фона на всю форму
             g.DrawImage(scene, 0, 0, this.ClientSize.Width, this.ClientSize.Height);
 
-            // Отрисовка снежинки в текущей позиции с текущим размером
-            g.DrawImage(snowflake, snowflakes.X, snowflakes.Y, snowflakes.Size, snowflakes.Size);
+            // Отрисовка снежинок в текущей позиции с текущим размером
+            foreach (var sf in snowflakes)
+            {
+                g.DrawImage(snowflake, sf.X, sf.Y, sf.Size, sf.Size);
+            }
 
         }
 
@@ -122,11 +152,11 @@ namespace screenSaver
         }
 
         /// <summary>
-        /// Обработка изменения размера формы
+        /// Обработка изменения размеров формы
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void MainForm_ResizeEnd(object sender, EventArgs e)
+        private void MainForm_Resize(object sender, EventArgs e)
         {
             if (snowflakes != null)
             {

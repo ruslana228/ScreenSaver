@@ -46,10 +46,10 @@ namespace screenSaver
             Text = "MainForm";
             TopMost = true;
             WindowState = FormWindowState.Maximized;
-            ResizeEnd += MainForm_ResizeEnd;
             Paint += MainForm_Paint;
             KeyDown += MainForm_KeyDown;
             MouseClick += MainForm_MouseClick;
+            Resize += MainForm_Resize;
             ResumeLayout(false);
         }
 
