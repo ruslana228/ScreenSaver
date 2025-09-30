@@ -44,14 +44,13 @@ namespace screenSaver
         /// <summary>
         /// Метод для создания снежинки
         /// </summary>
-        /// <returns></returns>
         private Snowflake CreateSnowflake()
         {
             // Получение текущих размеров клиентской области
-            int width = this.ClientSize.Width;
-            int height = this.ClientSize.Height;
+            var width = this.ClientSize.Width;
+            var height = this.ClientSize.Height;
 
-            int size = random.Next(30, 80); // Размер снежинки
+            var size = random.Next(30, 80); // Размер снежинки
             int speed; // Скорость падения снежинок
 
             // Настраиваем скорость в зависимости от размера
@@ -68,8 +67,8 @@ namespace screenSaver
                 speed = random.Next(5, 8);
             }
 
-            int x = random.Next(0, width);
-            int y = random.Next(-height * 2, -height / 2); // Появляется выше экрана
+            var x = random.Next(0, width);
+            var y = random.Next(-height * 2, -height / 2); // Появляется выше экрана
 
             // Создание и возврат снежинки
             return new Snowflake
@@ -84,13 +83,11 @@ namespace screenSaver
         /// <summary>
         /// Обработчик таймера
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void Timer_Tick(object? sender, EventArgs e)
         {
             // Получение текущих размеров клиентской области
-            int width = this.ClientSize.Width;
-            int height = this.ClientSize.Height;
+            var width = this.ClientSize.Width;
+            var height = this.ClientSize.Height;
 
             // Двигаем снежинки вниз на велечину их скорости
             for (int i = 0; i < snowflakes.Count; i++)
@@ -114,8 +111,6 @@ namespace screenSaver
         /// <summary>
         /// Отрисовка фона и снежинки
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void MainForm_Paint(object sender, PaintEventArgs e)
         {
             Graphics g = e.Graphics; // Получение объекта для рисования
@@ -134,8 +129,6 @@ namespace screenSaver
         /// <summary>
         /// Обработка закрытия формы - закрытие формы при нажатии на любую клавишу
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void MainForm_KeyDown(object sender, KeyEventArgs e)
         {
             this.Close();
@@ -144,8 +137,6 @@ namespace screenSaver
         /// <summary>
         /// Обработка закрытия формы - закрытие формы при нажатии на любую кнопку мыши
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void MainForm_MouseClick(object sender, MouseEventArgs e)
         {
             this.Close();
@@ -154,8 +145,6 @@ namespace screenSaver
         /// <summary>
         /// Обработка изменения размеров формы
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void MainForm_Resize(object sender, EventArgs e)
         {
             if (snowflakes != null)
