@@ -1,8 +1,5 @@
 ﻿namespace screenSaver
 {
-    /// <summary>
-    /// Класс для хранения параметров снежинки
-    /// </summary>
     public class Snowflake
     {
         public float X { get; set; }

@@ -1,4 +1,4 @@
-namespace screenSaver
+п»їnamespace screenSaver
 {
     public partial class MainForm : Form
     {
@@ -7,7 +7,7 @@ namespace screenSaver
         private Image scene;
         private List<Snowflake> snowflakes;
         private Random random;
-        private const int SNOWFLAKE_COUNT = 150; // Количество снежинок
+        private const int SNOWFLAKE_COUNT = 150; 
 
         public MainForm()
         {
@@ -18,19 +18,14 @@ namespace screenSaver
             scene = Properties.Resources.village;
             snowflake = Properties.Resources.snowflake;
 
-            // Инициализируем снежинки
             InitializeSnowflakes();
 
-            // Настройка таймера
             timer = new System.Windows.Forms.Timer();
             timer.Tick += Timer_Tick;
             timer.Interval = 8;
             timer.Start();
         }
 
-        /// <summary>
-        /// Метод инициализации снежинки
-        /// </summary>
         private void InitializeSnowflakes()
         {
             snowflakes.Clear();
@@ -41,36 +36,30 @@ namespace screenSaver
             }
         }
 
-        /// <summary>
-        /// Метод для создания снежинки
-        /// </summary>
         private Snowflake CreateSnowflake()
         {
-            // Получение текущих размеров клиентской области
             var width = this.ClientSize.Width;
             var height = this.ClientSize.Height;
 
-            var size = random.Next(30, 80); // Размер снежинки
-            int speed; // Скорость падения снежинок
+            var size = random.Next(30, 80); 
+            int speed;
 
-            // Настраиваем скорость в зависимости от размера
-            if (size < 40) // Мелкие снежинки
+            if (size < 40) 
             {
                 speed = random.Next(3, 6);
             }
-            else if (size > 60) // Крупные снежинки
+            else if (size > 60) 
             {
                 speed = random.Next(7, 10);
             }
-            else // Средние снежинки
+            else 
             {
                 speed = random.Next(5, 8);
             }
 
             var x = random.Next(0, width);
-            var y = random.Next(-height * 2, -height / 2); // Появляется выше экрана
+            var y = random.Next(-height * 2, -height / 2); 
 
-            // Создание и возврат снежинки
             return new Snowflake
             {
                 X = x,
@@ -80,45 +69,33 @@ namespace screenSaver
             };
         }
 
-        /// <summary>
-        /// Обработчик таймера
-        /// </summary>
         private void Timer_Tick(object? sender, EventArgs e)
         {
-            // Получение текущих размеров клиентской области
             var width = this.ClientSize.Width;
             var height = this.ClientSize.Height;
 
-            // Двигаем снежинки вниз на велечину их скорости
             for (int i = 0; i < snowflakes.Count; i++)
             {
                 var sf = snowflakes[i];
 
-                // Двигаем снежинку вниз
                 sf.Y += sf.Speed;
 
-                // Если снежинка упала за нижнюю границу
                 if (sf.Y > height)
                 {
                     snowflakes[i] = CreateSnowflake();
-                    snowflakes[i].Y = -snowflakes[i].Size; // Чтобы снежинка появилась выше экрана
+                    snowflakes[i].Y = -snowflakes[i].Size; 
                 }
             }
 
-            this.Invalidate(); // Перерисовка формы
+            this.Invalidate();
         }
 
-        /// <summary>
-        /// Отрисовка фона и снежинки
-        /// </summary>
         private void MainForm_Paint(object sender, PaintEventArgs e)
         {
-            Graphics g = e.Graphics; // Получение объекта для рисования
+            Graphics g = e.Graphics;
 
-            // Отрисовка фона на всю форму
             g.DrawImage(scene, 0, 0, this.ClientSize.Width, this.ClientSize.Height);
 
-            // Отрисовка снежинок в текущей позиции с текущим размером
             foreach (var sf in snowflakes)
             {
                 g.DrawImage(snowflake, sf.X, sf.Y, sf.Size, sf.Size);
@@ -126,25 +103,16 @@ namespace screenSaver
 
         }
 
-        /// <summary>
-        /// Обработка закрытия формы - закрытие формы при нажатии на любую клавишу
-        /// </summary>
         private void MainForm_KeyDown(object sender, KeyEventArgs e)
         {
             this.Close();
         }
 
-        /// <summary>
-        /// Обработка закрытия формы - закрытие формы при нажатии на любую кнопку мыши
-        /// </summary>
         private void MainForm_MouseClick(object sender, MouseEventArgs e)
         {
             this.Close();
         }
 
-        /// <summary>
-        /// Обработка изменения размеров формы
-        /// </summary>
         private void MainForm_Resize(object sender, EventArgs e)
         {
             if (snowflakes != null)
