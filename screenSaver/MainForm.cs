@@ -7,7 +7,26 @@
         private Image scene;
         private List<Snowflake> snowflakes;
         private Random random;
-        private const int SNOWFLAKE_COUNT = 150; 
+
+        /// <summary>
+        /// Количество снежинок
+        /// </summary>
+        private const int SNOWFLAKE_COUNT = 150;
+
+        /// <summary>
+        /// Интервал срабатывания таймера
+        /// </summary>
+        private const int INTERVAL_TIMER = 8;
+
+        /// <summary>
+        /// Маленький размер снежинок
+        /// </summary>
+        private const int SMALLSIZE = 40;
+
+        /// <summary>
+        /// Большой размер снежинок
+        /// </summary>
+        private const int BIGSIZE = 60;
 
         public MainForm()
         {
@@ -18,48 +37,52 @@
             scene = Properties.Resources.village;
             snowflake = Properties.Resources.snowflake;
 
+            // Инициализация снежинок
             InitializeSnowflakes();
 
+            // Настройка таймера
             timer = new System.Windows.Forms.Timer();
             timer.Tick += Timer_Tick;
-            timer.Interval = 8;
+            timer.Interval = INTERVAL_TIMER;
             timer.Start();
         }
 
+        /// <summary>
+        /// Метод инициализации снежинок
+        /// </summary>
         private void InitializeSnowflakes()
         {
+            // Получение текущих размеров клиентской области
+            var width = Screen.PrimaryScreen.Bounds.Width;
+            var height = Screen.PrimaryScreen.Bounds.Height;
+
             snowflakes.Clear();
 
             for (int i = 0; i < SNOWFLAKE_COUNT; i++)
             {
-                snowflakes.Add(CreateSnowflake());
+                snowflakes.Add(CreateSnowflake(width, height));
             }
         }
 
-        private Snowflake CreateSnowflake()
+        /// <summary>
+        /// Метод для создания снежинок
+        /// </summary>
+        private Snowflake CreateSnowflake(int width, int height)
         {
-            var width = this.ClientSize.Width;
-            var height = this.ClientSize.Height;
+            var size = random.Next(30, 80); // Размер снежинки 
 
-            var size = random.Next(30, 80); 
-            int speed;
-
-            if (size < 40) 
+            // Скорость падения снежинки
+            var speed = size switch
             {
-                speed = random.Next(3, 6);
-            }
-            else if (size > 60) 
-            {
-                speed = random.Next(7, 10);
-            }
-            else 
-            {
-                speed = random.Next(5, 8);
-            }
+                < SMALLSIZE => random.Next(3, 6),
+                > BIGSIZE => random.Next(7, 10),
+                _ => random.Next(5, 8)
+            };
 
             var x = random.Next(0, width);
-            var y = random.Next(-height * 2, -height / 2); 
+            var y = random.Next(-height * 2, -height / 2); // Появляется выше экрана
 
+            // Создание и возврат снежинки
             return new Snowflake
             {
                 X = x,
@@ -69,33 +92,46 @@
             };
         }
 
+        /// <summary>
+        /// Обработчик таймера
+        /// </summary>
         private void Timer_Tick(object? sender, EventArgs e)
         {
-            var width = this.ClientSize.Width;
-            var height = this.ClientSize.Height;
+            // Получение текущих размеров клиентской области
+            var width = Screen.PrimaryScreen.Bounds.Width;
+            var height = Screen.PrimaryScreen.Bounds.Height;
 
-            for (int i = 0; i < snowflakes.Count; i++)
+            // Движение снежинок вниз на величину их скорости
+            foreach (var sf in snowflakes)
             {
-                var sf = snowflakes[i];
+                sf.Y += sf.Speed; // Движение вниз
 
-                sf.Y += sf.Speed;
-
+                // Если снежинка упала за нижнюю границу формы
                 if (sf.Y > height)
                 {
-                    snowflakes[i] = CreateSnowflake();
-                    snowflakes[i].Y = -snowflakes[i].Size; 
+                    // Обновляем свойства существующей снежинки
+                    var newSnowflake = CreateSnowflake(width, height);
+                    sf.X = newSnowflake.X;
+                    sf.Y = -newSnowflake.Size; // Появляется выше экрана
+                    sf.Size = newSnowflake.Size;
+                    sf.Speed = newSnowflake.Speed;
                 }
             }
 
-            this.Invalidate();
+            this.Invalidate(); // Перерисовка формы
         }
 
+        /// <summary>
+        /// Отрисовка фона и снежинок
+        /// </summary>
         private void MainForm_Paint(object sender, PaintEventArgs e)
         {
-            Graphics g = e.Graphics;
+            Graphics g = e.Graphics; // Получение объекта для рисования
 
+            // Отрисовка фона на всю форму
             g.DrawImage(scene, 0, 0, this.ClientSize.Width, this.ClientSize.Height);
 
+            // Отрисовка снежинок в текущей позиции с текущим размером
             foreach (var sf in snowflakes)
             {
                 g.DrawImage(snowflake, sf.X, sf.Y, sf.Size, sf.Size);
@@ -103,23 +139,29 @@
 
         }
 
+        /// <summary>
+        /// Обработка нажатия клавиш - закрытие формы при нажатии на любую клавишу
+        /// </summary>
         private void MainForm_KeyDown(object sender, KeyEventArgs e)
         {
             this.Close();
         }
 
+        /// <summary>
+        /// Обработка нажатия кнопок мыши - закрытие формы при нажатии на любую кнопку мыши
+        /// </summary>
         private void MainForm_MouseClick(object sender, MouseEventArgs e)
         {
             this.Close();
         }
 
-        private void MainForm_Resize(object sender, EventArgs e)
+        /// <summary>
+        /// Обработка изменения размеров формы
+        /// </summary>
+        private void MainForm_ResizeEnd(object sender, EventArgs e)
         {
-            if (snowflakes != null)
-            {
-                InitializeSnowflakes();
-                this.Invalidate();
-            }
+            InitializeSnowflakes();
+            this.Invalidate();
         }
     }
 }
